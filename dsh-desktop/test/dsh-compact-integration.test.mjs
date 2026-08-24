@@ -101,7 +101,7 @@ test('dsh-compact integration: composite agent starts engine, command and pruner
 })
 
 test('dsh-compact integration: migration helper is included in packaged app', () => {
-  const builder = readFileSync(join(root, 'electron-builder.yml'), 'utf8')
-  assert.match(builder, /- compact-preset-migrate\.js/)
-  assert.match(builder, /- assets\/\*\*\/\*/)
+  // v5.0 起打包清单由 electron-builder.yml 迁至 tauri-shell/stage-resources.mjs 的 ROOT_FILES。
+  const stageSrc = readFileSync(join(root, '..', 'tauri-shell', 'stage-resources.mjs'), 'utf8')
+  assert.match(stageSrc, /'compact-preset-migrate\.js'/)
 })

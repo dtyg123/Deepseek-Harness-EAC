@@ -215,7 +215,8 @@ test('上游新增 preset 完整：目录自包含或引用的 ../_preset 共享
   }
 });
 
-test('electron-builder files 包含 preset-sync.js（否则新模块不进安装包）', () => {
-  const yml = readFileSync(join(root, 'electron-builder.yml'), 'utf8');
-  assert.match(yml, /- preset-sync\.js/);
+test('Tauri 打包清单包含 preset-sync.js（否则新模块不进安装包）', () => {
+  // v5.0 起打包清单由 electron-builder.yml 迁至 tauri-shell/stage-resources.mjs 的 ROOT_FILES。
+  const stageSrc = readFileSync(join(root, '..', 'tauri-shell', 'stage-resources.mjs'), 'utf8');
+  assert.match(stageSrc, /'preset-sync\.js'/);
 });

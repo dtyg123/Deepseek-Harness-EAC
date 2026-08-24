@@ -26,8 +26,9 @@
       "webviewInstallMode": {
         "type": "downloadBootstrapper"
       },
-      "nsis": {
+        "nsis": {
         "installMode": "currentUser",
+        "compression": "bzip2",
         "languages": [
           "SimpChinese",
           "English"
