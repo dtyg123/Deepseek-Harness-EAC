@@ -209,9 +209,7 @@ npm run dist                   # 构建 portable + NSIS 安装包，输出到 di
 
 | 决策 | 原因 |
 | --- | --- |
-| `asar: false` | dsh 依赖 sharp / node-pty / koffi 等原生模块，必须以真实文件落盘 |
-| 内置独立 node.exe + npm | 预编译原生模块 ABI 与安装时的 Node 版本绑定；Electron 内嵌 Node ABI 不同。内置同版本 node.exe 零配置保证一致，npm 用于官方更新。注意：electron-builder 复制 extraResources 时会剥掉嵌套 node_modules，npm 自己的依赖由 \`afterPack\` 钩子原样补拷（scripts/after-pack.js） |
-| `npmRebuild: false` | 绝不为 Electron 重编译原生模块，否则内置 node.exe 反而加载不了 |
+| 内置独立 node.exe + npm | 预编译原生模块 ABI 与运行时的 Node 版本绑定；内置同版本 node.exe 零配置保证一致，npm 用于官方更新 |
 | `--port 0` + 解析 stdout | 由 OS 分配空闲端口，避免端口冲突；本机回环绑定不对外暴露 |
 | 退出时 `taskkill /T /F` | dsh 会派生 pwsh 等子进程，按进程树整体回收 |
 | 更新走 overlay + staging 原子切换 | 更新失败零风险；便携版（资源每次从 exe 解压）也能持久更新 |
@@ -238,12 +236,7 @@ npm run dist                   # 构建 portable + NSIS 安装包，输出到 di
 
 ```
 dsh-desktop/
-├── main.js               # Electron 主进程（无边框窗口/托盘/自绘 chrome IPC + 余额推送 + 客户端自更新 + 快捷方式维护）
-├── updater.js            # dsh agent 官方更新引擎（检查 / 同意后安装 / 回退）
-├── client-updater.js     # 客户端（封装层）自更新引擎（GitHub/Gitee 双源 + 分片合并 + 原地替换）
-├── balance.js            # DeepSeek 账户余额查询（主进程）
-├── session-watcher.js    # 会话完成监听（zstd 多帧解码 + turn/end 检测）
-├── preload.js            # 沙箱预加载（自绘玻璃标题栏 + 窗口控制/菜单 IPC + 余额事件桥）
+├── lib/desktop/          # 桌面端核心模块（boot-server、companion-sync等）
 ├── assets/               # 加载页、更新进度页、图标、托盘图标、配套 dsh 插件
 │   └── plugins/          # 桌面壳配套（dsh-balance、dsh-file-changes、dsh-terminal、
 │                         # dsh-easy-setup、dsh-skin-switch）+ 内置社区插件
@@ -258,10 +251,8 @@ dsh-desktop/
 │   ├── check-client-latest.js # 客户端更新链路测试工具
 │   ├── test-watcher.js   # 通知检测单测
 │   └── inspect-session.js# 会话日志解析工具
-├── build/icon.png        # electron-builder 图标源
 ├── vendor/               # 内置 node.exe / npm CLI（fetch-runtime 生成，不入库）
-├── electron-builder.yml  # 打包配置
-└── dist/                 # 构建产物
+└── test/                 # 单元测试
 ```
 
 ## License
